@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Waffle Villa — Washim</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #C9922A;
+    --gold-light: #E8B84B;
+    --gold-pale: #F5DFA0;
+    --brown: #1A0F05;
+    --brown-mid: #2D1A08;
+    --brown-light: #4A2E10;
+    --cream: #F9F0DC;
+    --red: #C0392B;
+    --white: #FEFEFE;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--brown);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ─── NOISE TEXTURE ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.4rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(26,15,5,0.95), transparent);
+  }
+
+  .nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--gold-light);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--cream);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    transition: opacity 0.2s, color 0.2s;
+  }
+
+  .nav-links a:hover { opacity: 1; color: var(--gold-light); }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,146,42,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(192,57,43,0.08) 0%, transparent 60%),
+      var(--brown);
+  }
+
+  .hero-badge {
+    display: inline-block;
+    border: 1px solid rgba(201,146,42,0.4);
+    color: var(--gold-light);
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.4rem 1.2rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 12vw, 9rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    position: relative;
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+
+  .hero-title .the {
+    font-size: 0.35em;
+    font-weight: 400;
+    font-style: italic;
+    display: block;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    margin-bottom: 0.2em;
+  }
+
+  .hero-title .villa {
+    color: var(--gold-light);
+    display: block;
+  }
+
+  .hero-divider {
+    width: 6rem;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 2rem auto;
+    animation: fadeUp 1s 0.2s ease both;
+  }
+
+  .hero-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(249,240,220,0.75);
+    letter-spacing: 0.05em;
+    animation: fadeUp 1s 0.3s ease both;
+  }
+
+  /* ─── COUNTDOWN ─── */
+  .countdown-section {
+    position: relative;
+    background: var(--brown-mid);
+    border-top: 1px solid rgba(201,146,42,0.2);
+    border-bottom: 1px solid rgba(201,146,42,0.2);
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .countdown-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2.5rem;
+  }
+
+  .countdown-grid {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 90px;
+  }
+
+  .countdown-num {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--gold-light);
+    transition: color 0.3s;
+  }
+
+  .countdown-unit {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(249,240,220,0.4);
+    margin-top: 0.5rem;
+  }
+
+  .countdown-sep {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    color: var(--gold);
+    opacity: 0.4;
+    align-self: flex-start;
+    padding-top: 0.5rem;
+  }
+
+  .opening-date {
+    margin-top: 2.5rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: rgba(249,240,220,0.5);
+  }
+
+  .opening-date span {
+    color: var(--gold-light);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  /* ─── MENU ─── */
+  .section {
+    padding: 7rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .section-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: rgba(249,240,220,0.55);
+    margin-bottom: 4rem;
+    max-width: 500px;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5px;
+    background: rgba(201,146,42,0.15);
+    border: 1px solid rgba(201,146,42,0.15);
+  }
+
+  .menu-item {
+    background: var(--brown);
+    padding: 2.5rem 2rem;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .menu-item::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--gold), var(--red));
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+    transform-origin: left;
+  }
+
+  .menu-item:hover { background: var(--brown-mid); }
+  .menu-item:hover::before { transform: scaleX(1); }
+
+  .menu-emoji {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .menu-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--cream);
+  }
+
+  .menu-desc {
+    font-size: 0.82rem;
+    color: rgba(249,240,220,0.5);
+    line-height: 1.6;
+  }
+
+  /* ─── ABOUT ─── */
+  .about-section {
+    background: var(--brown-mid);
+    border-top: 1px solid rgba(201,146,42,0.12);
+    border-bottom: 1px solid rgba(201,146,42,0.12);
+    padding: 7rem 2rem;
+  }
+
+  .about-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  .about-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.3;
+    color: var(--gold-pale);
+  }
+
+  .about-quote .highlight {
+    color: var(--gold-light);
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  .about-text {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: rgba(249,240,220,0.65);
+  }
+
+  .about-text p + p { margin-top: 1.2rem; }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+
+  .tag {
+    border: 1px solid rgba(201,146,42,0.35);
+    color: var(--gold);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+  }
+
+  /* ─── CONTACT ─── */
+  .contact-section {
+    padding: 7rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .contact-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-bottom: 2rem;
+  }
+
+  .contact-info-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .contact-info-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--cream);
+  }
+
+  .contact-info-value a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .contact-info-value a:hover { color: var(--gold-light); }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--brown);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 1rem 2.5rem;
+    text-decoration: none;
+    margin-top: 1rem;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .cta-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  .map-placeholder {
+    background: var(--brown-mid);
+    border: 1px solid rgba(201,146,42,0.2);
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: rgba(249,240,220,0.4);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+  }
+
+  .map-icon {
+    font-size: 2.5rem;
+  }
+
+  .map-address {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-style: italic;
+    line-height: 1.6;
+    color: rgba(249,240,220,0.5);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: #110A03;
+    border-top: 1px solid rgba(201,146,42,0.15);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .footer-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: rgba(249,240,220,0.35);
+    margin-bottom: 1.5rem;
+  }
+
+  .footer-social {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .footer-social a {
+    color: rgba(249,240,220,0.4);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .footer-social a:hover { color: var(--gold); }
+
+  .footer-copy {
+    font-size: 0.7rem;
+    color: rgba(249,240,220,0.2);
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── GRAND OPENING BANNER ─── */
+  .opening-banner {
+    background: var(--red);
+    text-align: center;
+    padding: 0.6rem 1rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+    position: relative;
+    z-index: 101;
+  }
+
+  .opening-banner span {
+    color: rgba(255,255,255,0.75);
+  }
+
+  .opening-banner strong {
+    color: #fff;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 700px) {
+    nav { padding: 1rem 1.2rem; }
+    .nav-links { display: none; }
+    .about-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+    .contact-section { grid-template-columns: 1fr; gap: 3rem; }
+    .countdown-sep { display: none; }
+    .hero { padding: 8rem 1.5rem 4rem; }
+  }
+
+  /* ─── WAFFLE PATTERN ─── */
+  .waffle-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.025;
+    background-image:
+      repeating-linear-gradient(0deg, var(--gold) 0, var(--gold) 1px, transparent 0, transparent 50%),
+      repeating-linear-gradient(90deg, var(--gold) 0, var(--gold) 1px, transparent 0, transparent 50%);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ANNOUNCEMENT BANNER -->
+<div class="opening-banner">
+  🧇 <strong>Grand Opening — 31st March 2026</strong> <span>· Maharatha Complex, Washim</span>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-brand">The Waffle Villa</a>
+  <ul class="nav-links">
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="waffle-bg"></div>
+
+  <div class="hero-badge" style="position:relative; z-index:2;">Now Opening in Washim</div>
+
+  <h1 class="hero-title" style="position:relative; z-index:2;">
+    <span class="the">The</span>
+    Waffle<br>
+    <span class="villa">Villa</span>
+  </h1>
+
+  <div class="hero-divider"></div>
+
+  <p class="hero-tagline" style="position:relative; z-index:2;">
+    Where Sweet Cravings Meet Their Match
+  </p>
+</section>
+
+<!-- COUNTDOWN -->
+<section class="countdown-section">
+  <p class="countdown-label">Opening in</p>
+  <div class="countdown-grid">
+    <div class="countdown-item">
+      <span class="countdown-num" id="days">00</span>
+      <span class="countdown-unit">Days</span>
+    </div>
+    <span class="countdown-sep">:</span>
+    <div class="countdown-item">
+      <span class="countdown-num" id="hours">00</span>
+      <span class="countdown-unit">Hours</span>
+    </div>
+    <span class="countdown-sep">:</span>
+    <div class="countdown-item">
+      <span class="countdown-num" id="minutes">00</span>
+      <span class="countdown-unit">Minutes</span>
+    </div>
+    <span class="countdown-sep">:</span>
+    <div class="countdown-item">
+      <span class="countdown-num" id="seconds">00</span>
+      <span class="countdown-unit">Seconds</span>
+    </div>
+  </div>
+  <p class="opening-date">Opening ceremony — <span>31st March 2026</span></p>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="section">
+    <p class="section-label reveal">Our Specialties</p>
+    <h2 class="section-title reveal">Made to Indulge</h2>
+    <p class="section-sub reveal">Every bite crafted to satisfy the deepest sweet cravings.</p>
+
+    <div class="menu-grid reveal">
+      <div class="menu-item">
+        <span class="menu-emoji">🧇</span>
+        <div class="menu-name">Classic Waffle</div>
+        <div class="menu-desc">Crispy golden waffles, perfectly fluffy inside — the foundation of everything we do.</div>
+      </div>
+      <div class="menu-item">
+        <span class="menu-emoji">🍦</span>
+        <div class="menu-name">Ice Cream Waffle</div>
+        <div class="menu-desc">Hot waffle meets cold ice cream — a contrast that works every single time.</div>
+      </div>
+      <div class="menu-item">
+        <span class="menu-emoji">🥞</span>
+        <div class="menu-name">Pancakes</div>
+        <div class="menu-desc">Soft, stacked, and drizzled — our pancakes are a full experience on their own.</div>
+      </div>
+      <div class="menu-item">
+        <span class="menu-emoji">🥤</span>
+        <div class="menu-name">Shakes</div>
+        <div class="menu-desc">Thick, rich, and loaded — the perfect companion to every sweet order.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="about-section">
+  <div class="about-inner">
+    <div class="about-quote reveal">
+      "Your waffle,<br>our <span class="highlight">muse.</span>"
+    </div>
+    <div class="about-text reveal">
+      <p>The Waffle Villa was born from a simple belief — that desserts aren't just food, they're a moment. A pause from the ordinary. A reason to smile for no reason at all.</p>
+      <p>Located in the heart of Washim, we're bringing something the city hasn't tasted before. Come for the waffles, stay for the feeling.</p>
+      <div class="tag-row">
+        <span class="tag">Waffles</span>
+        <span class="tag">Ice Cream</span>
+        <span class="tag">Pancakes</span>
+        <span class="tag">Shakes</span>
+        <span class="tag">Washim</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-section">
+    <div class="reveal">
+      <p class="section-label">Find Us</p>
+      <h2 class="section-title" style="font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: 2.5rem;">Come Say Hello</h2>
+
+      <div class="contact-info-item">
+        <span class="contact-info-label">Phone</span>
+        <span class="contact-info-value">
+          <a href="tel:+919373951796">+91 93739 51796</a>
+        </span>
+      </div>
+
+      <div class="contact-info-item">
+        <span class="contact-info-label">Location</span>
+        <span class="contact-info-value">Maharatha Complex, Washim<br>Maharashtra, India</span>
+      </div>
+
+      <div class="contact-info-item">
+        <span class="contact-info-label">Instagram</span>
+        <span class="contact-info-value">
+          <a href="https://instagram.com/waffle_villa.01" target="_blank">@waffle_villa.01</a>
+        </span>
+      </div>
+
+      <a href="https://wa.me/919373951796?text=Hi!%20I%20want%20to%20know%20more%20about%20The%20Waffle%20Villa%20%F0%9F%A7%87" class="cta-btn" target="_blank">
+        Order on WhatsApp
+      </a>
+    </div>
+
+    <div class="reveal">
+      <div class="map-placeholder">
+        <span class="map-icon">📍</span>
+        <span class="map-address">
+          Maharatha Complex<br>
+          Washim, Maharashtra
+        </span>
+        <a href="https://maps.google.com/?q=Maharatha+Complex+Washim+Maharashtra" target="_blank" style="color: var(--gold); font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; text-decoration:none;">Open in Maps →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">The Waffle Villa</div>
+  <div class="footer-tagline">Where Sweet Cravings Meet Their Match</div>
+  <div class="footer-social">
+    <a href="https://instagram.com/waffle_villa.01" target="_blank">Instagram</a>
+    <a href="https://wa.me/919373951796" target="_blank">WhatsApp</a>
+  </div>
+  <div class="footer-copy">© 2026 The Waffle Villa · Washim, Maharashtra</div>
+</footer>
+
+<script>
+  // ─── COUNTDOWN ───
+  function updateCountdown() {
+    const target = new Date('2026-03-31T00:00:00').getTime();
+    const now = new Date().getTime();
+    const diff = target - now;
+
+    if (diff <= 0) {
+      document.getElementById('days').textContent = '00';
+      document.getElementById('hours').textContent = '00';
+      document.getElementById('minutes').textContent = '00';
+      document.getElementById('seconds').textContent = '00';
+      return;
+    }
+
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+    document.getElementById('days').textContent = String(d).padStart(2, '0');
+    document.getElementById('hours').textContent = String(h).padStart(2, '0');
+    document.getElementById('minutes').textContent = String(m).padStart(2, '0');
+    document.getElementById('seconds').textContent = String(s).padStart(2, '0');
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  // ─── SCROLL REVEAL ───
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
